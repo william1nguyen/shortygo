@@ -123,7 +123,7 @@ func (r *RedisCache) Exists(ctx context.Context, key string) (bool, error) {
 	return value == 1, nil
 }
 
-func (r *RedisCache) GetMetrics(ctx context.Context, key string) *CacheMetrics {
+func (r *RedisCache) GetMetrics() *CacheMetrics {
 	return &CacheMetrics{
 		Hits:          atomic.LoadInt64(&r.metrics.Hits),
 		Misses:        atomic.LoadInt64(&r.metrics.Misses),
