@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/teris-io/shortid"
 	"github.com/william1nguyen/shortygo/internal/cache"
+	"github.com/william1nguyen/shortygo/internal/config"
 )
 
 type URLService struct {
@@ -43,8 +43,6 @@ const (
 	MaxRetres  = 3
 )
 
-var BaseURL = os.Getenv("BASE_URL")
-
 func NewURLService(cache *cache.RedisCache) *URLService {
 	return &URLService{cache: cache}
 }
@@ -74,7 +72,7 @@ func (s *URLService) ShortenURL(ctx context.Context, req *ShortenRequest) (*Shor
 	expiresAt := now.Add(ttl)
 
 	return &ShortenResponse{
-		ShortURL:    fmt.Sprintf("%s/%s", BaseURL, shortID),
+		ShortURL:    fmt.Sprintf("%s/%s", config.Load().BaseURL, shortID),
 		ShortID:     shortID,
 		OriginalURL: normalizeURL,
 		ExpiresAt:   expiresAt.Unix(),
