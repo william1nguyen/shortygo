@@ -8,6 +8,7 @@ import (
 	"github.com/william1nguyen/shortygo/internal/cache"
 	"github.com/william1nguyen/shortygo/internal/config"
 	"github.com/william1nguyen/shortygo/internal/handler"
+	"github.com/william1nguyen/shortygo/internal/middleware"
 	"github.com/william1nguyen/shortygo/internal/service"
 )
 
@@ -30,6 +31,7 @@ func setupRouter(urlHandler *handler.URLHandler) *gin.Engine {
 
 	router.Use(gin.Logger(), gin.Recovery())
 	router.Use(corsMiddleware())
+	router.Use(middleware.RateLimiter(100))
 
 	setupRoutes(router, urlHandler)
 	return router
@@ -51,10 +53,10 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 func setupRoutes(router *gin.Engine, urlHandler *handler.URLHandler) {
-
 	router.GET("/health", handler.CheckHealth)
 
 	api := router.Group("/api/v1")
+	api.Use(middleware.APIKeyAuth())
 	{
 		api.POST("/shorten", urlHandler.ShortenURL)
 		api.GET("/metrics", urlHandler.GetMetrics)

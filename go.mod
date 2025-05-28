@@ -7,6 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.9.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+	golang.org/x/time v0.11.0
 )
 
 require (

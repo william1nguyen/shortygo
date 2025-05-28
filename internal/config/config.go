@@ -7,11 +7,13 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig
-	Redis  RedisConfig
+	Server  ServerConfig
+	Redis   RedisConfig
+	BaseURL string
 }
 
 type ServerConfig struct {
+	Host string
 	Port string
 }
 
@@ -24,6 +26,7 @@ type RedisConfig struct {
 func Load() *Config {
 	return &Config{
 		Server: ServerConfig{
+			Host: os.Getenv("HOST"),
 			Port: os.Getenv("PORT"),
 		},
 		Redis: RedisConfig{
@@ -31,6 +34,7 @@ func Load() *Config {
 			Password: os.Getenv("REDIS_PASSWORD"),
 			DB:       coerceInt(os.Getenv("REDIS_DB")),
 		},
+		BaseURL: os.Getenv("BASE_URL"),
 	}
 }
 

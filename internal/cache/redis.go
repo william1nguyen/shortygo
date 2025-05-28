@@ -19,7 +19,6 @@ type RedisCache struct {
 
 type CacheMetrics struct {
 	Hits          int64 `json:"hits"`
-	Misses        int64 `json:"misses"`
 	Errors        int64 `json:"errors"`
 	TotalRequests int64 `json:"total_requests"`
 }
@@ -81,11 +80,6 @@ func (r *RedisCache) Get(ctx context.Context, key string) (string, error) {
 	client := r.getClient(key)
 	value, err := client.Get(ctx, key).Result()
 
-	if err != redis.Nil {
-		atomic.AddInt64(&r.metrics.Misses, 1)
-		return "", fmt.Errorf("fey not found")
-	}
-
 	if err != nil {
 		atomic.AddInt64(&r.metrics.Errors, 1)
 		return "", fmt.Errorf("failed to get key %s:%w", key, err)
@@ -126,7 +120,6 @@ func (r *RedisCache) Exists(ctx context.Context, key string) (bool, error) {
 func (r *RedisCache) GetMetrics() *CacheMetrics {
 	return &CacheMetrics{
 		Hits:          atomic.LoadInt64(&r.metrics.Hits),
-		Misses:        atomic.LoadInt64(&r.metrics.Misses),
 		Errors:        atomic.LoadInt64(&r.metrics.Errors),
 		TotalRequests: atomic.LoadInt64(&r.metrics.TotalRequests),
 	}
