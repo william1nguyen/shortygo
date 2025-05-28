@@ -1,20 +1,52 @@
 services:
-  redis:
+  redis1:
     image: bitnami/redis:latest
-    container_name: redis
-    hostname: redis
+    container_name: redis1
+    hostname: redis1
     volumes:
-      - redis_data:/bitnami/redis
+      - redis1_data:/bitnami/redis
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
-      - 6379:6379
+      - 6380:6379
+    restart: unless-stopped
+    networks: 
+     - shortygo
+
+  redis2:
+    image: bitnami/redis:latest
+    container_name: redis2
+    hostname: redis2
+    volumes:
+      - redis2_data:/bitnami/redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - 6381:6379
+    restart: unless-stopped
+    networks: 
+     - shortygo
+
+  redis3:
+    image: bitnami/redis:latest
+    container_name: redis3
+    hostname: redis3
+    volumes:
+      - redis3_data:/bitnami/redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - 6382:6379
     restart: unless-stopped
     networks: 
      - shortygo
 
 volumes:
-  redis_data:
+  redis1_data:
+    driver: local
+  redis2_data:
+    driver: local
+  redis3_data:
     driver: local
 
 networks:
