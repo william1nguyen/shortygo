@@ -62,20 +62,19 @@ func (h *URLHandler) RedirectURL(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusMovedPermanently, originalURL)
+	c.Redirect(http.StatusMovedPermanently, originalURL)
 }
 
 func (h *URLHandler) GetMetrics(c *gin.Context) {
 	metrics := h.service.GetCacheMetrics()
 
 	hitRatio := 0.0
-	if metrics.Hits+metrics.Misses > 0 {
-		hitRatio = float64(metrics.Hits) / float64(metrics.Hits+metrics.Misses)
+	if metrics.Hits > 0 {
+		hitRatio = float64(metrics.Hits) / float64(metrics.TotalRequests)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"cache_hits":     metrics.Hits,
-		"cache_misses":   metrics.Misses,
 		"cache_errors":   metrics.Errors,
 		"total_requests": metrics.TotalRequests,
 		"hit_ratio":      hitRatio,
