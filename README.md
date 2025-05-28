@@ -1,1 +1,1 @@
-# shortygo
+# shortygo (Shorten URL)
