@@ -1,3 +1,10 @@
+// @title           Short URL API
+// @version         1.0
+// @description     A simple URL shortening service
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name x-api-key
+
 package main
 
 import (
@@ -5,11 +12,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	_ "github.com/william1nguyen/shortygo/docs"
 	"github.com/william1nguyen/shortygo/internal/cache"
 	"github.com/william1nguyen/shortygo/internal/config"
 	"github.com/william1nguyen/shortygo/internal/handler"
 	"github.com/william1nguyen/shortygo/internal/middleware"
 	"github.com/william1nguyen/shortygo/internal/service"
+
+	swaggerFiles "github.com/swaggo/files"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func loadEnv() {
@@ -33,6 +45,9 @@ func setupRouter(urlHandler *handler.URLHandler) *gin.Engine {
 	router.Use(corsMiddleware())
 	router.Use(middleware.RateLimiter(100))
 
+	router.GET("/health", handler.CheckHealth)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	setupRoutes(router, urlHandler)
 	return router
 }
@@ -53,8 +68,6 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 func setupRoutes(router *gin.Engine, urlHandler *handler.URLHandler) {
-	router.GET("/health", handler.CheckHealth)
-
 	api := router.Group("/api/v1")
 	api.Use(middleware.APIKeyAuth())
 	{

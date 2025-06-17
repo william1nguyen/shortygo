@@ -21,6 +21,17 @@ func NewURLHandler(service *service.URLService) *URLHandler {
 	return &URLHandler{service: service}
 }
 
+// Shorten godoc
+// @Summary 	Shorten URL
+// @Description Shorten long URL
+// @Tags 		URL
+// @Security 	ApiKeyAuth
+// @Accept 		json
+// @Produce 	json
+// @Param 		request body service.ShortenRequest true  "Request body for creating short URL"
+// @Success      200      {object}  service.ShortenResponse
+// @Failure      400      {object}  ErrorResponse
+// @Router       /api/v1/shorten [post]
 func (h *URLHandler) ShortenURL(c *gin.Context) {
 	var req service.ShortenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -43,6 +54,15 @@ func (h *URLHandler) ShortenURL(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// RedirectURL godoc
+// @Summary      Redirect URL
+// @Description  Redirect to the original URL using short ID
+// @Tags         URL
+// @Security     ApiKeyAuth
+// @Param        shortId  path      string  true  "Short URL ID"
+// @Success      301      {string}  string  "Redirected to original URL"
+// @Failure      400      {object}  ErrorResponse  "Bad request or not found"
+// @Router       /{shortId} [get]
 func (h *URLHandler) RedirectURL(c *gin.Context) {
 	shortID := c.Param("shortId")
 	if shortID == "" {
@@ -65,6 +85,13 @@ func (h *URLHandler) RedirectURL(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, originalURL)
 }
 
+// GetMetrics godoc
+// @Summary      Get cache metrics
+// @Description  Returns cache statistics including hit ratio and total requests
+// @Tags         Metrics
+// @Security     ApiKeyAuth
+// @Produce      json
+// @Router       /api/v1/metrics [get]
 func (h *URLHandler) GetMetrics(c *gin.Context) {
 	metrics := h.service.GetCacheMetrics()
 

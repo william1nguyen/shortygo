@@ -1,0 +1,104 @@
+definitions:
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+      timestamp:
+        type: integer
+    type: object
+  service.ShortenRequest:
+    properties:
+      ttl:
+        type: integer
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  service.ShortenResponse:
+    properties:
+      created_at:
+        type: integer
+      expires_at:
+        type: integer
+      origin_url:
+        type: string
+      short_id:
+        type: string
+      short_url:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: A simple URL shortening service
+  title: Short URL API
+  version: "1.0"
+paths:
+  /{shortId}:
+    get:
+      description: Redirect to the original URL using short ID
+      parameters:
+      - description: Short URL ID
+        in: path
+        name: shortId
+        required: true
+        type: string
+      responses:
+        "301":
+          description: Redirected to original URL
+          schema:
+            type: string
+        "400":
+          description: Bad request or not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Redirect URL
+      tags:
+      - URL
+  /api/v1/metrics:
+    get:
+      description: Returns cache statistics including hit ratio and total requests
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get cache metrics
+      tags:
+      - Metrics
+  /api/v1/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Shorten long URL
+      parameters:
+      - description: Request body for creating short URL
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.ShortenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.ShortenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Shorten URL
+      tags:
+      - URL
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: x-api-key
+    type: apiKey
+swagger: "2.0"
